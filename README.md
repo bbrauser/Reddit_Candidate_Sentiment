@@ -45,6 +45,3 @@ Install the necessary libraries with:
 ```bash
 pip install praw pandas textblob tqdm requests beautifulsoup4 python-dotenv
 ```
-
-## Visualizations Info
-
