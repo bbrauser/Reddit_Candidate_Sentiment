@@ -6,8 +6,8 @@ This project aims to fetch data from Reddit regarding registered presidential ca
 
 __config_utils.py__:
 
-• Contains configurations for the Reddit PRAW library.
-• Loads necessary environment variables from a .env file.
+• Contains configurations for the Reddit PRAW library.\n
+• Loads necessary environment variables from a .env file.\n
 • Provides the configured Reddit instance.
 
 __data_aggregation.py__:
