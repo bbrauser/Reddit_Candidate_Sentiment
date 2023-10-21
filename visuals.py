@@ -20,30 +20,6 @@ colors = {'Score': 'red', 'Subjectivity_Score': 'blue', 'Sentiment_Score': 'gree
 # Create a PDF file
 with PdfPages(f'Reports/Candidate Sentiment Analysis (Reddit) - {date.today()}.pdf') as pdf:
 
-    # Create a title page
-    fig = plt.figure(figsize=(7.5, 10))
-    plt.title(f'Candidate Sentiment Analysis (Reddit)\n{date.today()}', fontsize=20, fontweight='bold', y=1.05, ha='center')
-
-    text = ("This PDF contains Python visualizations of data for noteworthy 2024 presidential candidates according to "
-       "ballotpedia.com. The names of those candidates were scraped from ballotpedia.com using the Python library "
-       "Beautiful Soup, and the rest of the data was scraped using Python and the Python Reddit API Wrapper (PRAW) to "
-       "search through the Conservative, Liberal, Democrats, and Republican subreddits for posts containing any mention "
-       "of the noteworthy candidates. From each of these posts, the post's title, text, score, and the date and time it "
-       "was created were compiled into a dataframe. From there, the TextBlob Python library was used to analyze the "
-       "subjectivity on a scale of 0 (opinion) to 1 (fact) and sentiment on a scale of -1 (negative) to 1 (positive). "
-       "The code for this project and other projects can be found here:")
-
-    github_url = "https://github.com/bbrauser/bbrauser"
-
-    # Adjust the placement of the main text and the GitHub URL for better visual appeal
-    plt.figtext(0.05, 0.45, text, fontsize=8, ha='left', va='top', wrap=True, linespacing=1.5)
-
-    # Add the GitHub URL at a suitable position after the main text
-    plt.figtext(0.5, 0.05, github_url, fontsize=8, ha='center', va='center', url=github_url)
-
-    plt.axis('off')
-
-
     with alive_bar(len(unique_names), title='Generating Charts') as bar:
 
         # Loop through each unique name
