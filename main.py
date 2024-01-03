@@ -8,7 +8,7 @@ from data_aggregation import aggregate_and_export
 candidates = get_presidential_candidates()
 
 # List of subreddits to search data from
-subreddits = ['Conservative', 'Liberal', 'democrats', 'Republican']
+subreddits = ['Conservative', 'Liberal', 'democrats', 'Republican', 'Libertarian', 'Progressive' , 'Republicanism']
 
 # Fetch data from Reddit based on the list of candidates and subreddits
 data = fetch_reddit_data(candidates, subreddits)

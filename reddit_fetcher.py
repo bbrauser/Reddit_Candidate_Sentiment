@@ -4,6 +4,7 @@ from tqdm import tqdm
 from datetime import datetime
 
 def fetch_reddit_data(candidates, subreddits):
+    # sourcery skip: extract-method, use-dict-items
     # Initialize a Reddit instance using the function from config_utils
     reddit = get_reddit()
 

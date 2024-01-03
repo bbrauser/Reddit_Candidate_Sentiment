@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.main {
+    padding: 20px;
+    background: white;
+    margin-top: 20px;
+}
+
+h1, p {
+    margin-bottom: 20px;
+}
+
+.candidate, .subreddit {
+    margin-bottom: 10px;
+}
+
+.candidate img, .subreddit img {
+    width: 50px; /* Adjust size as needed */
+    height: auto;
+    margin-right: 10px;
+}
+
+/* ... existing styles ... */
+
+.candidates, .subreddits {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+    gap: 10px; /* Space between grid items */
+}
+
+.candidate, .subreddit {
+    margin-bottom: 10px;
+}
+
+.candidate img, .subreddit img {
+    width: 50px; /* Adjust size as needed */
+    height: auto;
+    margin-right: 10px;
+}
