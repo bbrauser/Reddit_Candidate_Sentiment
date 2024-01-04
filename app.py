@@ -1,30 +1,29 @@
-from flask import Flask, render_template, request
-from web_scraper import get_presidential_candidates  # Ensure this matches your project structure
+from flask import Flask, render_template, request, redirect, url_for
+from web_scraper import get_presidential_candidates
+from app_visuals import generate_visualizations, visualization_name_mapping
 
 app = Flask(__name__)
 
-# Sample list of subreddits - replace with actual subreddits from your project
-subreddits = ['Conservative', 'Liberal', 'democrats', 'Republican']
+candidates = get_presidential_candidates()
+subreddits = ['Conservative', 'Liberal', 'democrats', 'Republican', 'Libertarian', 'Progressive', 'Republicanism']
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        selected_candidates = request.form.getlist('candidates')
-        selected_subreddits = request.form.getlist('subreddits')
+        selected_candidate = request.form['candidate']
+        selected_subreddit = request.form['subreddit']
 
-        # Now you can call fetch_reddit_data or any other function with selected candidates and subreddits
-        # Example: results = fetch_reddit_data(selected_candidates, selected_subreddits)
-        # Handle and display the results as needed
-    else:
-        selected_candidates = []
-        selected_subreddits = []
+        # Redirect to the visualization page for the selected candidate
+        return redirect(url_for('visualizations', candidate=selected_candidate, subreddit=selected_subreddit))
 
-    candidates = get_presidential_candidates()
-    return render_template('index.html', 
-                           candidates=candidates, 
-                           selected_candidates=selected_candidates, 
-                           selected_subreddits=selected_subreddits, 
-                           subreddits=subreddits)
+    return render_template('index.html', candidates=candidates, subreddits=subreddits)
+
+@app.route('/visualizations/<candidate>/<subreddit>')
+def visualizations(candidate, subreddit):
+    # Generate visualizations for the selected candidate
+    visualizations_data = generate_visualizations(candidate)
+
+    return render_template('visualizations.html', candidate=candidate, subreddit=subreddit, visualizations=visualizations_data, visualization_name_mapping=visualization_name_mapping)
 
 if __name__ == '__main__':
     app.run(debug=True)

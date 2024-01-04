@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Reddit Sentiment Analysis</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="navbar">
@@ -11,60 +10,29 @@
     <div class="container">
         <div class="main">
             <h1>Welcome!</h1>
-            <form method="POST" action="/">
-                <!-- Candidate Checkboxes -->
-                <fieldset>
-                    <legend>Select Candidates:</legend>
-                    <div class="candidates"> <!-- Grid container for candidates -->
-                        {% for candidate in candidates %}
-                        <div class="candidate">
-                            <input type="checkbox" id="{{ candidate.replace(' ', '') }}" name="candidates" value="{{ candidate.replace(' ', '') }}">
-                            <label for="{{ candidate.replace(' ', '') }}">
-                                <img src="{{ url_for('static', filename='assets/images/' + candidate.replace(' ', '') + '.jpeg') }}" alt="{{ candidate }}">
-                                {{ candidate }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </fieldset>
-                <br>
+            <p>This web application analyzes sentiments on Reddit about presidential candidates for the year 2024.</p>
 
-                <!-- Subreddit Checkboxes -->
-                <fieldset>
-                    <legend>Select Subreddits:</legend>
-                    <div class="subreddits"> <!-- Grid container for subreddits -->
-                        {% for subreddit in subreddits %}
-                        <div class="subreddit">
-                            <input type="checkbox" id="{{ subreddit }}" name="subreddits" value="{{ subreddit }}">
-                            <label for="{{ subreddit }}">{{ subreddit }}</label>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </fieldset>
-                <br>
+            <form method="POST">
+                <label for="candidate">Select a Candidate:</label>
+                <select name="candidate" id="candidate">
+                    {% for candidate in candidates %}
+                        <option value="{{ candidate }}">{{ candidate }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
 
-                <!-- Submit Button -->
-                <input type="submit" value="Analyze">
+                <label for="subreddit">Select a Subreddit:</label>
+                <select name="subreddit" id="subreddit">
+                    {% for subreddit in subreddits %}
+                        <option value="{{ subreddit }}">{{ subreddit }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+
+                <input type="submit" value="Submit">
             </form>
 
-            <!-- Display Selected Candidates and Subreddits (if any) -->
-            {% if selected_candidates %}
-            <h2>Selected Candidates:</h2>
-            <ul>
-                {% for candidate in selected_candidates %}
-                <li>{{ candidate }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-
-            {% if selected_subreddits %}
-            <h2>Selected Subreddits:</h2>
-            <ul>
-                {% for subreddit in selected_subreddits %}
-                <li>{{ subreddit }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+            <!-- Additional content can go here -->
         </div>
     </div>
 </body>

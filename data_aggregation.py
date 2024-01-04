@@ -40,6 +40,9 @@ def aggregate_and_export(data, sentiments, sentiment_scores, subjectivity_scores
 
     # Format the 'Created' column to show month abbreviation and year (e.g., 'Jan 23').
     df['Created'] = df['Created'].apply(lambda x: x.strftime('%b %Y'))
-
+    
+    # Removes trailing white space
+    df['Name'] = df['Name'].str.strip()
+    
     # Export the DataFrame to a CSV file named 'results.csv' without row indices.
     df.to_csv('results.csv', index=False)
