@@ -1,27 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Visualizations</title>
+    <meta charset="UTF-8">
+    <title>Visualizations for {{ candidate }}</title>
 </head>
 <body>
-    <div class="navbar">
-        <h1>Visualizations for {{ candidate }}</h1>
-        <p>Subreddit: {{ subreddit }}</p>
+    <h1>Visualizations for {{ candidate }}</h1>
+
+    <!-- Displaying Histogram of Score -->
+    <div>
+        <h2>{{ visualization_name_mapping['hist_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['hist_score']) }}" alt="Histogram of Score">
     </div>
-    <div class="container">
-        <div class="main">
-            <h2>Visualizations:</h2>
 
-            {% for visualization_name, image_path in visualizations.items() %}
-                {% set mapped_name = visualization_name_mapping[visualization_name] %}
-                <h3>{{ mapped_name }}</h3>
-                <img src="{{ url_for('static', filename='hist_score.png') }}" alt="{{ mapped_name }}">
-                <br><br>
-            {% endfor %}
+    <!-- Displaying Histogram of Subjectivity Score -->
+    <div>
+        <h2>{{ visualization_name_mapping['hist_subj_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['hist_sub_score']) }}" alt="Histogram of Subjectivity Score">
+    </div>
 
-            <!-- Additional content can go here -->
+    <!-- Displaying Histogram of Sentiment Score -->
+    <div>
+        <h2>{{ visualization_name_mapping['hist_sent_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['hist_sent_score']) }}" alt="Histogram of Sentiment Score">
+    </div>
 
-        </div>
+    <!-- Displaying Boxplot of Score and Subreddit -->
+    <div>
+        <h2>{{ visualization_name_mapping['box_subr_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['box_subr_score']) }}" alt="Boxplot of Score and Subreddit">
     </div>
 </body>
 </html>
