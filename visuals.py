@@ -37,8 +37,8 @@ def generate_visualizations(selected_candidates):
     # Define a color palette for the subreddits
     unique_subreddits = candidate_data['Subreddit'].unique()
     unique_overall= candidate_data['Overall_Sentiment'].unique()
-    palette_subr = sns.color_palette("muted", len(unique_subreddits))  # HSV is a good choice for distinct colors
-    palette_over = sns.color_palette("muted", len(unique_overall))  # HSV is a good choice for distinct colors
+    palette_subr = sns.color_palette("muted", len(unique_subreddits))
+    palette_over = sns.color_palette("muted", len(unique_overall))
     color_dict_subr = dict(zip(unique_subreddits, palette_subr))
     color_dict_over = dict(zip(unique_overall, palette_over))
 
