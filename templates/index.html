@@ -13,8 +13,8 @@
             <p>This web application analyzes sentiments on Reddit about presidential candidates for the year 2024.</p>
 
             <form method="POST">
-                <label for="candidate">Select a Candidate:</label>
-                <select name="candidate" id="candidate">
+                <label for="candidates">Select Candidate(s):</label>
+                <select name="candidate" id="candidates" multiple>
                     {% for candidate in candidates %}
                         <option value="{{ candidate }}">{{ candidate }}</option>
                     {% endfor %}

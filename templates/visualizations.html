@@ -5,6 +5,11 @@
     <title>Visualizations for {{ candidate }}</title>
 </head>
 <body>
+
+    <form action="{{ url_for('index') }}">
+        <input type="submit" value="Back" />
+    </form>
+    
     <h1>Visualizations for {{ candidate }}</h1>
 
     <!-- Displaying Histogram of Score -->
@@ -25,10 +30,82 @@
         <img src="{{ url_for('static', filename=file_paths['hist_sent_score']) }}" alt="Histogram of Sentiment Score">
     </div>
 
+    <!-- Displaying Scatterplot of Score and Subjectivity Score -->
+    <div>
+        <h2>{{ visualization_name_mapping['scatter_score_subj_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['scatter_score_subj_score']) }}" alt="Scatterplot of Score and Subjectivity Score">
+    </div>
+
+    <!-- Displaying Scatterplot of Score and Subjectivity Score -->
+    <div>
+        <h2>{{ visualization_name_mapping['scatter_score_sent_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['scatter_score_sent_score']) }}" alt="Scatterplot of Score and Sentiment Score">
+    </div>
+
+    <!-- Displaying Scatterplot of Score and Subjectivity Score -->
+    <div>
+        <h2>{{ visualization_name_mapping['scatter_subj_score_sent_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['scatter_subj_score_sent_score']) }}" alt="Scatterplot of Subjectivity Score and Sentiment Score">
+    </div>
+
+    <!-- Displaying Count of Subreddit and Overall Sentiment -->
+    <div>
+        <h2>{{ visualization_name_mapping['count_subr_over'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['count_subr_over']) }}" alt="Count of Subreddit and Overall Sentiment">
+    </div>
+
+    <!-- Displaying Count of Subreddit and Name -->
+    <div>
+        <h2>{{ visualization_name_mapping['count_subr_name'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['count_subr_name']) }}" alt="Count of Subreddit and Name">
+    </div>
+
+    <!-- Displaying Count of Subreddit and Overall Sentiment -->
+    <div>
+        <h2>{{ visualization_name_mapping['count_over_name'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['count_over_name']) }}" alt="Count of Overall Sentiment and Name">
+    </div>
+
     <!-- Displaying Boxplot of Score and Subreddit -->
     <div>
         <h2>{{ visualization_name_mapping['box_subr_score'] }}</h2>
         <img src="{{ url_for('static', filename=file_paths['box_subr_score']) }}" alt="Boxplot of Score and Subreddit">
     </div>
+
+    <!-- Displaying Boxplot of Subjectivity Score and Subreddit -->
+    <div>
+        <h2>{{ visualization_name_mapping['box_subr_subj_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['box_subr_subj_score']) }}" alt="Boxplot of Subjectivity Score and Subreddit">
+    </div>
+
+    <!-- Displaying Boxplot of Sentiment Score and Subreddit -->
+    <div>
+        <h2>{{ visualization_name_mapping['box_subr_sent_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['box_subr_sent_score']) }}" alt="Boxplot of Sentiment Score and Subreddit">
+
+    <!-- Displaying Boxplot of Score and Overall Sentiment -->
+    <div>
+        <h2>{{ visualization_name_mapping['box_over_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['box_over_score']) }}" alt="Boxplot of Score and Overall Sentiment">
+    </div>
+
+    <!-- Displaying Boxplot of Subjectivity Score and Overall Sentiment -->
+    <div>
+        <h2>{{ visualization_name_mapping['box_over_subj_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['box_over_subj_score']) }}" alt="Boxplot of Subjectivity Score and Overall Sentiment">
+    </div>
+
+    <!-- Displaying Boxplot of Sentiment Score and Overall Sentiment -->
+    <div>
+        <h2>{{ visualization_name_mapping['box_over_sent_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['box_over_sent_score']) }}" alt="Boxplot of Sentiment Score and Overall Sentiment">
+    </div>
+
+    <!-- Displaying Boxplot of Sentiment Score and Overall Sentiment -->
+    <div>
+        <h2>{{ visualization_name_mapping['line_score'] }}</h2>
+        <img src="{{ url_for('static', filename=file_paths['line_score']) }}" alt="Score Year-To-Date">
+    </div>
+    
 </body>
 </html>

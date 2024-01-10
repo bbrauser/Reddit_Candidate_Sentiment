@@ -1,233 +1,212 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib.backends.backend_pdf import PdfPages
-import numpy as np
-from alive_progress import alive_bar
-from datetime import date
+# Define the mapping of visualization names
 import math
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
 
-# Read the CSV file
-df = pd.read_csv('results.csv')
+visualization_name_mapping = {
+    'hist_score': 'Histogram of Score',
+    'hist_subj_score': 'Histogram of Subjectivity Score',
+    'hist_sent_score': 'Histogram of Sentiment Score',
+    'scatter_score_subj_score': 'Scatterplot of Score and Subjectivity Score',
+    'scatter_score_sent_score': 'Scatterplot of Score and Sentiment Score',
+    'scatter_subj_score_sent_score': 'Scatterplot of Subjectivity Score and Sentiment Score',
+    'box_subr_score': 'Boxplot of Score and Subreddit',
+    'box_subr_subj_score': 'Boxplot of Subjectivity Score and Subreddit',
+    'box_subr_sent_score': 'Boxplot of Sentiment Score and Subreddit',
+    'box_over_score': 'Boxplot of Score and Overall Sentiment',
+    'box_over_subj_score': 'Boxplot of Subjectivity Score and Overall Sentiment',
+    'box_over_sent_score': 'Boxplot of Sentiment Score and Overall Sentiment',
+    'count_subr_over': 'Count of Subreddit and Overall Sentiment',
+    'count_subr_name': 'Count of Subreddit and Name',
+    'count_over_name': 'Count of Overall Sentiment and Name',
+    'line_score': 'Score Year-To-Date',
+    'line_subj': 'Subjectivity Score Year-To-Date',
+    'line_sent': 'Sentiment Score Year-To-Date',
+}
 
-# Get unique values in the "Name" column
-unique_names = sorted(df['Name'].unique(), key=lambda x: x.split()[-1])
+def generate_visualizations(selected_candidates):
+    # Load data from results.csv
+    df = pd.read_csv('results.csv')
+    
+    # Filter data for the selected candidate
+    candidate_data = df[df['Name'].isin(selected_candidates)]
+    sns.set(style="whitegrid")
+    
+    # Define a color palette for the subreddits
+    unique_subreddits = candidate_data['Subreddit'].unique()
+    unique_overall= candidate_data['Overall_Sentiment'].unique()
+    palette_subr = sns.color_palette("muted", len(unique_subreddits))  # HSV is a good choice for distinct colors
+    palette_over = sns.color_palette("muted", len(unique_overall))  # HSV is a good choice for distinct colors
+    color_dict_subr = dict(zip(unique_subreddits, palette_subr))
+    color_dict_over = dict(zip(unique_overall, palette_over))
 
-colors = {'Score': 'red', 'Subjectivity_Score': 'blue', 'Sentiment_Score': 'green', 
-            'Name': "dark orange", 'Subreddit': "light purple", 
-            'Overall_Sentiment': "dark yellow", 'Created': "light blue"}
+    # Histogram of Score
+    plt.figure(figsize=(12, 6))
+    sns.histplot(data=candidate_data, x='Score', kde=False, bins=10, hue='Name', alpha=0.8)
+    plt.title('Histogram of Score')
+    plt.xticks(np.arange(0, candidate_data['Score'].max(), 1000))
+    plt.xticks(np.linspace(0, math.ceil(candidate_data['Score'].max() / 100) * 100, 11))
+    plt.savefig('static/hist_score.png', bbox_inches='tight')
+    plt.close()
 
-# Create a PDF file
-with PdfPages(f'Reports/Candidate Sentiment Analysis (Reddit) - {date.today()}.pdf') as pdf:
+    # Histogram of Subjectivity Score
+    plt.figure(figsize=(12, 6))
+    sns.histplot(data=candidate_data, x='Subjectivity_Score', kde=False, bins=np.arange(0, 1.01, 0.1), hue='Name', alpha=0.8)
+    plt.title('Histogram of Subjectivity Score')
+    plt.xticks(np.arange(0, 1.1, 0.1))
+    plt.savefig('static/hist_subj_score.png', bbox_inches='tight')
+    plt.close()
 
-    with alive_bar(len(unique_names), title='Generating Charts') as bar:
+    # Histogram of Sentiment Score
+    plt.figure(figsize=(12, 8))
+    sns.histplot(data=candidate_data, x='Sentiment_Score', kde=False, bins=np.arange(-1, 1.01, 0.2), hue='Name', alpha=0.8)
+    plt.title('Histogram of Sentiment Score')
+    plt.xticks(np.arange(-1, 1.2, 0.2))  # x-ticks at the bin edges
+    plt.savefig('static/hist_sent_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Scatterplot of Score and Subjectivity Score
+    plt.figure(figsize=(12, 10))
+    sns.scatterplot(data=candidate_data, x='Score', y='Subjectivity_Score', hue='Name', alpha=0.8)
+    plt.title('Scatterplot of Score and Subjectivity Score')
+    plt.xticks(np.arange(0, candidate_data['Score'].max(), 1000))
+    plt.xticks(np.linspace(0, math.ceil(candidate_data['Score'].max() / 100) * 100, 11))
+    plt.yticks(np.arange(0, 1.1, 0.1))
+    plt.savefig('static/scatter_score_subj_score.png', bbox_inches='tight')
+    plt.close()
 
-        # Loop through each unique name
-        for name in unique_names:
-            
-            # Subset the data for the current name
-            name_data = df[df['Name'] == name]
+    # Scatterplot of Score and Sentiment Score
+    plt.figure(figsize=(12, 10))
+    sns.scatterplot(data=candidate_data, x='Score', y='Sentiment_Score', hue='Name', alpha=0.8)
+    plt.title('Scatterplot of Score and Sentiment Score')
+    plt.xticks(np.arange(0, candidate_data['Score'].max(), 1000))
+    plt.xticks(np.linspace(0, math.ceil(candidate_data['Score'].max() / 100) * 100, 11))
+    plt.yticks(np.arange(-1, 1.2, 0.2))
+    plt.savefig('static/scatter_score_sent_score.png', bbox_inches='tight')
+    plt.close()
 
-            # Create a new page in the PDF file and add color legend
-            fig, axs = plt.subplots(nrows=5, ncols=3, figsize=(6.5, 9))
-            plt.suptitle(name, fontsize=9, fontstyle="italic", fontweight='bold')
+    # Scatterplot of Subjectivity Score and Sentiment Score
+    plt.figure(figsize=(12, 10))
+    sns.scatterplot(data=candidate_data, x='Subjectivity_Score', y='Sentiment_Score', hue='Name', alpha=0.8)
+    plt.title('Scatterplot of Subjectivity Score and Sentiment Score')
+    plt.xticks(np.arange(0, 1.1, 0.1))
+    plt.yticks(np.arange(-1, 1.2, 0.2))
+    plt.savefig('static/scatter_subj_score_sent_score.png', bbox_inches='tight')
+    plt.close()
 
-            # Distribution
-            # Visualize the distribution of the Reddit post score using a histogram
-            sns.histplot(data=name_data, x='Score', kde=True, bins=10, ax=axs[0][0])
-            axs[0][0].set_title('Distribution of Reddit Post Score', fontsize=5)
-            axs[0][0].set_xticks(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11))
-            axs[0][0].set_xticklabels(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11), fontsize=3.5)
-            axs[0][0].set_yticks(np.linspace(0, 600, 7))
-            axs[0][0].set_yticklabels(np.linspace(0, 600, 7), fontsize=3.5)
-            axs[0][0].set_xlabel('Reddit Post Score', fontsize=5)
-            axs[0][0].set_ylabel('Frequency', fontsize=5)
-            axs[0][0].tick_params(axis='x', labelsize=3.5)
-            axs[0][0].tick_params(axis='y', labelsize=4.5)
-            axs[0][0].xaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
-            axs[0][0].yaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
+    # Boxplot of Score and Subreddit    
+    plt.figure(figsize=(12, 10))
+    sns.boxplot(data=candidate_data, x='Subreddit', y='Score', showfliers = False, palette=color_dict_subr)
+    plt.title('Boxplot of Subreddit and Score')
+    plt.savefig('static/box_subr_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Boxplot of Subjectivity Score and Subreddit
+    plt.figure(figsize=(12, 10))
+    sns.boxplot(data=candidate_data, x='Subreddit', y='Subjectivity_Score', showfliers=False, palette=color_dict_subr)
+    plt.title('Boxplot of Subjectivity Score and Subreddit')
+    plt.yticks(np.arange(0, 1.1, 0.1))
+    plt.savefig('static/box_subr_subj_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Boxplot of Sentiment Score and Subreddit
+    plt.figure(figsize=(12, 10))
+    sns.boxplot(data=candidate_data, x='Subreddit', y='Sentiment_Score', showfliers=False, palette=color_dict_subr)
+    plt.title('Boxplot of Sentiment Score and Subreddit')
+    plt.yticks(np.arange(-1, 1.2, 0.2))
+    plt.savefig('static/box_subr_sent_score.png', bbox_inches='tight')
+    plt.close()
 
-            # Visualize the distribution of Subjectivity Score using a histogram
-            sns.histplot(data=name_data, x='Subjectivity_Score', kde=True, bins=10, ax=axs[0][1])
-            axs[0][1].set_title('Distribution of Reddit Post Subjectivity Score', fontsize=5)
-            axs[0][1].set_xticks(np.linspace(0, 1, 11))
-            axs[0][1].set_xticklabels(np.linspace(0, 1, 11), fontsize=3.5)
-            axs[0][1].set_yticks(np.linspace(0, 600, 7))
-            axs[0][1].set_yticklabels(np.linspace(0, 600, 7), fontsize=3.5)
-            axs[0][1].set_xlabel('Reddit Post Subjectivity Score', fontsize=5)
-            axs[0][1].set_ylabel('Frequency', fontsize=5)
-            axs[0][1].tick_params(axis='x', labelsize=3.5)
-            axs[0][1].tick_params(axis='y', labelsize=4.5)
-            axs[0][1].xaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-            axs[0][1].yaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
+    # Boxplot of Score and Overall_Sentiment    
+    plt.figure(figsize=(12, 10))
+    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Score', showfliers = False, palette=color_dict_over)
+    plt.title('Boxplot of Score and Overall Sentiment')
+    plt.savefig('static/box_over_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Boxplot of Subjectivity Score and Overall_Sentiment
+    plt.figure(figsize=(12, 10))
+    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Subjectivity_Score', showfliers=False, palette=color_dict_over)
+    plt.title('Boxplot of Subjectivity Score and Overall Sentiment')
+    plt.yticks(np.arange(0, 1.1, 0.1))
+    plt.savefig('static/box_over_subj_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Boxplot of Sentiment Score and Overall_Sentiment
+    plt.figure(figsize=(12, 10))
+    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Sentiment_Score', showfliers=False, palette=color_dict_over)
+    plt.title('Boxplot of Sentiment Score and Overall Sentiment')
+    plt.yticks(np.arange(-1, 1.2, 0.2))
+    plt.savefig('static/box_over_sent_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Lineplot of Score over time
+    plt.figure(figsize=(12, 10))
+    sns.lineplot(data=candidate_data, x='Created', y='Score', hue = 'Name', errorbar = None)
+    plt.title('Score Year-To-Date')
+    plt.savefig('static/line_score.png', bbox_inches='tight')
+    plt.close()
+    
+    # Lineplot of Subjectivity Score over Time
+    plt.figure(figsize=(12, 10))
+    sns.lineplot(data=candidate_data, x='Created', y='Subjectivity_Score', hue = 'Name', errorbar = None)
+    plt.title('Subjectivity Score Year-To-Date')
+    plt.savefig('static/line_subj.png', bbox_inches='tight')
+    plt.close()
+    
+    # Lineplot of Sentiment Score over time
+    plt.figure(figsize=(12, 10))
+    sns.lineplot(data=candidate_data, x='Created', y='Sentiment_Score', hue = 'Name', errorbar = None)
+    plt.title('Sentiment Score Year-To-Date')
+    plt.savefig('static/line_sent.png', bbox_inches='tight')
+    plt.close()
+    
+    # Count of Subreddit and Overall Sentiment
+    plt.figure(figsize=(12, 10))
+    sns.countplot(data=candidate_data, x='Subreddit', hue='Overall_Sentiment', alpha=0.8)
+    plt.title('Countplot of Subreddit and Overall Sentiment')
+    plt.savefig('static/count_subr_over.png', bbox_inches='tight')
+    plt.close()
+    
+    # Count of Subreddit and Name
+    plt.figure(figsize=(12,10))
+    sns.countplot(data=candidate_data, x='Subreddit', hue='Name', alpha=0.8)
+    plt.title('Countplot of Subreddit and Name')
+    plt.savefig('static/count_subr_name.png', bbox_inches='tight')
+    plt.close()
+    
+    # Count of Overall Sentiment and Name
+    plt.figure(figsize=(12, 10))
+    sns.countplot(data=candidate_data, x='Overall_Sentiment', hue='Name', alpha=0.8)
+    plt.title('Countplot of Overall Sentiment and Name')
+    plt.savefig('static/count_over_name.png', bbox_inches='tight')
+    plt.close()   
+    
+    return {
+        'file_paths': {
+            'hist_score': 'hist_score.png', 
+            'hist_sub_score': 'hist_subj_score.png', 
+            'hist_sent_score': 'hist_sent_score.png',
+            'scatter_score_subj_score': 'scatter_score_subj_score.png',
+            'scatter_score_sent_score': 'scatter_score_sent_score.png',
+            'scatter_subj_score_sent_score': 'scatter_subj_score_sent_score.png',
+            'box_subr_score': 'box_subr_score.png',
+            'box_subr_subj_score': 'box_subr_subj_score.png',
+            'box_subr_sent_score': 'box_subr_sent_score.png',
+            'box_over_score': 'box_over_score.png',
+            'box_over_subj_score': 'box_over_subj_score.png',
+            'box_over_sent_score': 'box_over_sent_score.png',
+            'count_subr_over': 'count_subr_over.png',
+            'count_subr_name': 'count_subr_name.png',
+            'count_over_name': 'count_over_name.png',
+            'line_score': 'line_score.png',
+            'line_subj': 'line_subj.png',
+            'line_sent': 'line_sent.png'
+        },
+        'candidate': selected_candidates,
+        'visualization_name_mapping': visualization_name_mapping
+    }
+    
 
-            # Visualize the distribution of Sentiment Score using a histogram
-            sns.histplot(data=name_data, x='Sentiment_Score', kde=True, bins=10, ax=axs[0][2])
-            axs[0][2].set_title('Distribution of Reddit Post Sentiment Score', fontsize=5)
-            axs[0][2].set_xticks(np.linspace(-1, 1, 11))
-            axs[0][2].set_xticklabels(np.linspace(-1, 1, 11), fontsize=3.5)
-            axs[0][2].set_yticks(np.linspace(0, 600, 7))
-            axs[0][2].set_yticklabels(np.linspace(0, 600, 7), fontsize=3.5)
-            axs[0][2].set_xlabel('Reddit Post Sentiment Score', fontsize=5)
-            axs[0][2].set_ylabel('Frequency', fontsize=5)
-            axs[0][2].tick_params(axis='x', labelsize=3.5)
-            axs[0][2].tick_params(axis='y', labelsize=4.5)
-            axs[0][2].xaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-            axs[0][2].yaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
- 
-            # Relationship between two numerical variables
-            # Visualize the relationship between Reddit Post Score and Subjectivity Score using a scatter plot
-            sns.scatterplot(data=name_data, x='Score', y='Subjectivity_Score', ax=axs[1][0])
-            axs[1][0].set_xticks(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11))
-            axs[1][0].set_xticklabels(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11), fontsize=3.5)
-            axs[1][0].set_yticks(np.linspace(0, 1, 11))
-            axs[1][0].set_yticklabels(np.linspace(0, 1, 11), fontsize=3.5)
-            axs[1][0].tick_params(axis='x', labelsize=3.5)
-            axs[1][0].tick_params(axis='y', labelsize=3.5)
-            axs[1][0].set_title('Relationship Between Reddit Post Score\nand Subjectivity Score', fontsize=5)
-            axs[1][0].set_xlabel('Reddit Post Score', fontsize=5)
-            axs[1][0].set_ylabel('Subjectivity Score', fontsize=5)
-            axs[1][0].xaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
-            axs[1][0].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between Reddit Post Score and Sentiment Score using a scatter plot
-            sns.scatterplot(data=name_data, x='Score', y='Sentiment_Score', ax=axs[1][1])
-            axs[1][1].set_xticks(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11))
-            axs[1][1].set_xticklabels(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11), fontsize=3.5)
-            axs[1][1].set_yticks(np.linspace(-1, 1, 11))
-            axs[1][1].set_yticklabels(np.linspace(-1, 1, 11), fontsize=3.5)
-            axs[1][1].tick_params(axis='x', labelsize=3.5)
-            axs[1][1].tick_params(axis='y', labelsize=3.5)
-            axs[1][1].set_title('Relationship Between Reddit Post Score\nand Sentiment Score', fontsize=5)
-            axs[1][1].set_xlabel('Reddit Post Score', fontsize=5)
-            axs[1][1].set_ylabel('Sentiment Score', fontsize=5)
-            axs[1][1].xaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
-            axs[1][1].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between Subjectivity Score and Sentiment Score using a scatter plot
-            sns.scatterplot(data=name_data, x='Sentiment_Score', y='Subjectivity_Score', ax=axs[1][2])
-            axs[1][2].set_xticks(np.linspace(-1, 1, 12))
-            axs[1][2].set_xticklabels(np.linspace(-1, 1, 12), fontsize=3.5)
-            axs[1][2].set_yticks(np.linspace(0, 1, 11))
-            axs[1][2].set_yticklabels(np.linspace(0, 1, 11), fontsize=3.5)
-            axs[1][2].tick_params(axis='x', labelsize=3.5)
-            axs[1][2].tick_params(axis='y', labelsize=3.5)
-            axs[1][2].set_title('Relationship Between Sentiment Score\nand Subjectivity Score', fontsize=5)
-            axs[1][2].set_xlabel('Sentiment Score', fontsize=5)
-            axs[1][2].set_ylabel('Subjectivity Score', fontsize=5)
-            axs[1][2].xaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-            axs[1][2].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a box plot
-            sns.boxplot(data=name_data, x='Subreddit', y='Score', ax=axs[2][0], showfliers=False)
-            axs[2][0].set_title('Relationship between Subreddit\nand Score', fontsize=5)
-            axs[2][0].set_xlabel('Subreddit', fontsize=5)
-            axs[2][0].set_yticks(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11))
-            axs[2][0].set_yticklabels(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11), fontsize=3.5)
-            axs[2][0].set_ylabel('Score', fontsize=5)
-            axs[2][0].yaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
-            axs[2][0].tick_params(axis='x', labelsize = 3.5)
-            axs[2][0].tick_params(axis='y', labelsize = 3.5)
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a box plot
-            sns.boxplot(data=name_data, x='Subreddit', y='Subjectivity_Score', ax=axs[2][1], showfliers=False)
-            axs[2][1].set_title('Relationship between Subreddit\nand Subjectivity Score', fontsize=5)
-            axs[2][1].set_xlabel('Subreddit', fontsize=5)
-            axs[2][1].set_ylabel('Subjectivity Score', fontsize=5)
-            axs[2][1].set_yticks(np.linspace(0, 1, 11))
-            axs[2][1].set_yticklabels(np.linspace(0, 1, 11), fontsize=3.5)
-            axs[2][1].tick_params(axis='x', labelsize = 3.5)
-            axs[2][1].tick_params(axis='y', labelsize = 3.5)
-            axs[2][1].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a box plot
-            sns.boxplot(data=name_data, x='Subreddit', y='Sentiment_Score', ax=axs[2][2], showfliers=False)
-            axs[2][2].set_title('Relationship between Subreddit\nand Sentiment Score', fontsize=5)
-            axs[2][2].set_xlabel('Subreddit', fontsize=5)
-            axs[2][2].set_ylabel('Sentiment Score', fontsize=5)
-            axs[2][2].set_yticks(np.linspace(-1, 1, 12))
-            axs[2][2].set_yticklabels(np.linspace(-1, 1, 12), fontsize=3.5)
-            axs[2][2].tick_params(axis='x', labelsize = 3.5)
-            axs[2][2].tick_params(axis='y', labelsize = 3.5)
-            axs[2][2].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a box plot
-            sns.boxplot(data=name_data, x='Overall_Sentiment', y='Score', ax=axs[3][0], showfliers=False)
-            axs[3][0].set_title('Relationship between Overall Sentiment\nand Score', fontsize=5)
-            axs[3][0].set_xlabel('Overall Sentiment', fontsize=5)
-            axs[3][0].set_yticks(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11))
-            axs[3][0].set_yticklabels(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11), fontsize=3.5)
-            axs[3][0].set_ylabel('Score', fontsize=5)
-            axs[3][0].tick_params(axis='x', labelsize = 3.5)
-            axs[3][0].tick_params(axis='y', labelsize = 3.5)
-            axs[3][0].yaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a box plot
-            sns.boxplot(data=name_data, x='Overall_Sentiment', y='Subjectivity_Score', ax=axs[3][1], showfliers=False)
-            axs[3][1].set_title('Relationship between Overall Sentiment\nand Subjectivity Score', fontsize=5)
-            axs[3][1].set_xlabel('Overall Sentiment', fontsize=5)
-            axs[3][1].set_ylabel('Subjectivity Score', fontsize=5)
-            axs[3][1].set_yticks(np.linspace(0, 1, 11))
-            axs[3][1].set_yticklabels(np.linspace(0, 1, 11), fontsize=3.5)
-            axs[3][1].tick_params(axis='x', labelsize = 3.5)
-            axs[3][1].tick_params(axis='y', labelsize = 3.5)
-            axs[3][1].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a box plot
-            sns.boxplot(data=name_data, x='Overall_Sentiment', y='Sentiment_Score', ax=axs[3][2], showfliers=False)
-            axs[3][2].set_title('Relationship between Overall Sentiment\nand Sentiment Score', fontsize=5)
-            axs[3][2].set_xlabel('Overall Sentiment', fontsize=5)
-            axs[3][2].set_ylabel('Sentiment Score', fontsize=5)
-            axs[3][2].set_yticks(np.linspace(-1, 1, 12))
-            axs[3][2].set_yticklabels(np.linspace(-1, 1, 12), fontsize=3.5)
-            axs[3][2].tick_params(axis='x', labelsize = 3.5)
-            axs[3][2].tick_params(axis='y', labelsize = 3.5)
-            axs[3][2].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a line plot for Score
-            sns.lineplot(data=name_data, x='Created', y='Score', errorbar=None, ax=axs[4][0])
-            axs[4][0].set_title('Score Year-To-Date', fontsize=5)
-            axs[4][0].set_xlabel('Created', fontsize=5)
-            axs[4][0].set_ylabel('Score', fontsize=5)
-            axs[4][0].set_yticks(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11))
-            axs[4][0].set_yticklabels(np.linspace(0, math.ceil(name_data['Score'].max() / 100) * 100, 11), fontsize=3.5)
-            axs[4][0].tick_params(axis='x', labelsize=3.5)
-            axs[4][0].tick_params(axis='y', labelsize=4.5)
-            axs[4][0].set_xticks(axs[4][0].get_xticks())
-            axs[4][0].set_xticklabels(axs[4][0].get_xticklabels(), rotation=45)
-            axs[4][0].yaxis.set_major_formatter(plt.FormatStrFormatter('%.0f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a line plot for Subjectivity Score
-            sns.lineplot(data=name_data, x='Created', y='Subjectivity_Score', errorbar=None, ax=axs[4][1])
-            axs[4][1].set_title('Subjectivity Score Year-To-Date', fontsize=5)
-            axs[4][1].set_xlabel('Created', fontsize=5)
-            axs[4][1].set_ylabel('Subjectivity Score', fontsize=5)
-            axs[4][1].set_yticks(np.linspace(0, 1, 11))
-            axs[4][1].set_yticklabels(np.linspace(0, 1, 11), fontsize=3.5)
-            axs[4][1].tick_params(axis='x', labelsize=3.5)
-            axs[4][1].tick_params(axis='y', labelsize=4.5)
-            axs[4][1].set_xticks(axs[4][1].get_xticks())
-            axs[4][1].set_xticklabels(axs[4][1].get_xticklabels(), rotation=45)
-            axs[4][1].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Visualize the relationship between a categorical variable and a numerical variable using a line plot for Sentiment Score
-            sns.lineplot(data=name_data, x='Created', y='Sentiment_Score', errorbar=None, ax=axs[4][2])
-            axs[4][2].set_title('Sentiment Score - Year-To-Date', fontsize=5)
-            axs[4][2].set_xlabel('Created', fontsize=5)
-            axs[4][2].set_ylabel('Sentiment Score', fontsize=5)
-            axs[4][2].set_yticks(np.linspace(-1, 1, 11))
-            axs[4][2].set_yticklabels(np.linspace(-1, 1, 11), fontsize=3.5)
-            axs[4][2].tick_params(axis='x', labelsize=3.5)
-            axs[4][2].tick_params(axis='y', labelsize=4.5)
-            axs[4][2].set_xticks(axs[4][2].get_xticks())
-            axs[4][2].set_xticklabels(axs[4][2].get_xticklabels(), rotation=45)
-            axs[4][2].yaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
-
-            # Adjust the layout and save the page to the PDF file
-            plt.subplots_adjust(hspace=0.5)
-            plt.tight_layout()
-            pdf.savefig(fig)
-
-            # Close the figure to free up memory
-            plt.close(fig)
-            bar()

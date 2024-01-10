@@ -43,6 +43,6 @@ def aggregate_and_export(data, sentiments, sentiment_scores, subjectivity_scores
     
     # Removes trailing white space
     df['Name'] = df['Name'].str.strip()
-    
+        
     # Export the DataFrame to a CSV file named 'results.csv' without row indices.
     df.to_csv('results.csv', index=False)
