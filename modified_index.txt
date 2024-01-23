@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Reddit Sentiment Analysis</title>
+<style>body { background-image: url("seal.webp"); background-size: cover; }</style></head>
+<body>
+<div class="navbar">
+<h1>Reddit Sentiment Analysis Web App</h1>
+</div>
+<div class="container">
+<div class="main">
+<h1>Welcome!</h1>
+<p>This web application analyzes sentiments on Reddit about presidential candidates for the year 2024.</p>
+<form method="POST">
+<label for="candidates">Select Candidate(s):</label>
+<input name="candidates" type="checkbox" value="{{ candidate }}"/><label>{{ candidate }}</label>
+<br/><br/>
+<input type="submit" value="Submit"/>
+</form>
+<!-- Additional content can go here -->
+</div>
+</div>
+</body>
+</html>

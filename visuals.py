@@ -44,7 +44,13 @@ def generate_visualizations(selected_candidates):
 
     # Histogram of Score
     plt.figure(figsize=(12, 6))
-    sns.histplot(data=candidate_data, x='Score', kde=False, bins=10, hue='Name', alpha=0.8)
+    sns.histplot(data=candidate_data, 
+                 x='Score', 
+                 kde=False, 
+                 bins=10, 
+                 hue='Name', 
+                 alpha=0.8, 
+                 order=candidate_data.groupby('Name')['Score'].count().sort_values(ascending=False).index)
     plt.title('Histogram of Score')
     plt.xticks(np.arange(0, candidate_data['Score'].max(), 1000))
     plt.xticks(np.linspace(0, math.ceil(candidate_data['Score'].max() / 100) * 100, 11))
@@ -53,7 +59,13 @@ def generate_visualizations(selected_candidates):
 
     # Histogram of Subjectivity Score
     plt.figure(figsize=(12, 6))
-    sns.histplot(data=candidate_data, x='Subjectivity_Score', kde=False, bins=np.arange(0, 1.01, 0.1), hue='Name', alpha=0.8)
+    sns.histplot(data=candidate_data, 
+                 x='Subjectivity_Score', 
+                 kde=False, 
+                 bins=np.arange(0, 1.01, 0.1), 
+                 hue='Name', 
+                 alpha=0.8, 
+                 order=candidate_data.groupby('Name')['Subjectivity_Score'].count().sort_values(ascending=False).index)
     plt.title('Histogram of Subjectivity Score')
     plt.xticks(np.arange(0, 1.1, 0.1))
     plt.savefig('static/hist_subj_score.png', bbox_inches='tight')
@@ -61,7 +73,12 @@ def generate_visualizations(selected_candidates):
 
     # Histogram of Sentiment Score
     plt.figure(figsize=(12, 8))
-    sns.histplot(data=candidate_data, x='Sentiment_Score', kde=False, bins=np.arange(-1, 1.01, 0.2), hue='Name', alpha=0.8)
+    sns.histplot(data=candidate_data, 
+                 x='Sentiment_Score', 
+                 kde=False, 
+                 bins=np.arange(-1, 1.01, 0.2), 
+                 hue='Name', alpha=0.8, 
+                 order=candidate_data.groupby('Name')['Sentiment_Score'].count().sort_values(ascending=False).index)
     plt.title('Histogram of Sentiment Score')
     plt.xticks(np.arange(-1, 1.2, 0.2))  # x-ticks at the bin edges
     plt.savefig('static/hist_sent_score.png', bbox_inches='tight')
@@ -98,22 +115,23 @@ def generate_visualizations(selected_candidates):
 
     # Boxplot of Score and Subreddit    
     plt.figure(figsize=(12, 10))
-    sns.boxplot(data=candidate_data, x='Subreddit', y='Score', showfliers = False, palette=color_dict_subr)
+    sns.boxplot(data=candidate_data, x='Subreddit', y='Score', hue='Subreddit', showfliers=False, palette=color_dict_subr)
     plt.title('Boxplot of Subreddit and Score')
+    plt.legend([],[], frameon=False)  # To hide the legend if not needed
     plt.savefig('static/box_subr_score.png', bbox_inches='tight')
     plt.close()
     
     # Boxplot of Subjectivity Score and Subreddit
     plt.figure(figsize=(12, 10))
-    sns.boxplot(data=candidate_data, x='Subreddit', y='Subjectivity_Score', showfliers=False, palette=color_dict_subr)
-    plt.title('Boxplot of Subjectivity Score and Subreddit')
-    plt.yticks(np.arange(0, 1.1, 0.1))
-    plt.savefig('static/box_subr_subj_score.png', bbox_inches='tight')
+    sns.boxplot(data=candidate_data, x='Subreddit', y='Subjectivity_Score', hue='Subreddit', showfliers=False, palette=color_dict_subr)
+    plt.title('Boxplot of Subreddit and Score')
+    plt.legend([],[], frameon=False)  # To hide the legend if not needed
+    plt.savefig('static/box_subr_score.png', bbox_inches='tight')
     plt.close()
     
     # Boxplot of Sentiment Score and Subreddit
     plt.figure(figsize=(12, 10))
-    sns.boxplot(data=candidate_data, x='Subreddit', y='Sentiment_Score', showfliers=False, palette=color_dict_subr)
+    sns.boxplot(data=candidate_data, x='Subreddit', y='Sentiment_Score', hue='Subreddit', showfliers=False, palette=color_dict_subr)
     plt.title('Boxplot of Sentiment Score and Subreddit')
     plt.yticks(np.arange(-1, 1.2, 0.2))
     plt.savefig('static/box_subr_sent_score.png', bbox_inches='tight')
@@ -121,14 +139,14 @@ def generate_visualizations(selected_candidates):
 
     # Boxplot of Score and Overall_Sentiment    
     plt.figure(figsize=(12, 10))
-    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Score', showfliers = False, palette=color_dict_over)
+    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Score', hue='Overall_Sentiment', showfliers = False, palette=color_dict_over)
     plt.title('Boxplot of Score and Overall Sentiment')
     plt.savefig('static/box_over_score.png', bbox_inches='tight')
     plt.close()
     
     # Boxplot of Subjectivity Score and Overall_Sentiment
     plt.figure(figsize=(12, 10))
-    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Subjectivity_Score', showfliers=False, palette=color_dict_over)
+    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Subjectivity_Score', hue='Overall_Sentiment', showfliers=False, palette=color_dict_over)
     plt.title('Boxplot of Subjectivity Score and Overall Sentiment')
     plt.yticks(np.arange(0, 1.1, 0.1))
     plt.savefig('static/box_over_subj_score.png', bbox_inches='tight')
@@ -136,7 +154,7 @@ def generate_visualizations(selected_candidates):
     
     # Boxplot of Sentiment Score and Overall_Sentiment
     plt.figure(figsize=(12, 10))
-    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Sentiment_Score', showfliers=False, palette=color_dict_over)
+    sns.boxplot(data=candidate_data, x='Overall_Sentiment', y='Sentiment_Score', hue='Overall_Sentiment', showfliers=False, palette=color_dict_over)
     plt.title('Boxplot of Sentiment Score and Overall Sentiment')
     plt.yticks(np.arange(-1, 1.2, 0.2))
     plt.savefig('static/box_over_sent_score.png', bbox_inches='tight')
